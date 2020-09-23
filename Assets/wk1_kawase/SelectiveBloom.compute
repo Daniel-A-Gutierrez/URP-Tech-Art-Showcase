@@ -1,0 +1,32 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+Texture2D<float4> _Input;
+Texture2D<float4> _Light;
+RWTexture2D<float4> Result;
+int width;
+int height;
+float intensity;
+
+SamplerState sampler_Input
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
+
+SamplerState sampler_Light
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
+};
+
+//literally just combines 2 textures into 1 as a tint.
+[numthreads(8,8,1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+    Result[id.xy] =  _Input.SampleLevel(sampler_Input, float2(id.xy) / float2(width, height),0) + intensity * _Light.SampleLevel(sampler_Light, float2(id.xy) / float2(width, height),0);
+}
