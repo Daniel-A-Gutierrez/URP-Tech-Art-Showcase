@@ -1,0 +1,54 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel ThresholdStep
+#pragma kernel KBlur
+#pragma kernel Add
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+Texture2D<float4> Source;
+RWTexture2D<float4> Result;
+Texture2D<float4> CameraTex;
+RWTexture2D<float4> Final;
+float threshold;
+float intensity;
+float skip;
+int width;
+int height;
+
+SamplerState linearclampsampler;
+
+[numthreads(8,8,1)]
+void ThresholdStep(uint3 id : SV_DispatchThreadID)
+{
+    //TempSource[id.xy] = float4(1, 1, 0, 1);
+    float4 src = Source.SampleLevel(linearclampsampler, float2(id.xy)/float2(width,height),0); 
+    //TempSource[id.xy] = step( float4(threshold, threshold, threshold, threshold), src)* src;//if a-threshold > 0 use a. so if a>threshold a, else 0
+    //not exactly what i want though because it reduces *all* the component colors that dont meet threshold. so instead
+
+    Result[id.xy] = step(.001f,dot(step(float4(threshold, threshold, threshold, threshold), src),float4(1,1,1,1)))* src; //use dot like an OR but for floats
+}
+
+[numthreads(8, 8, 1)]
+void KBlur(uint3 id : SV_DispatchThreadID)
+{
+    //Result[id.xy] = float4(0, 1, 1, 1);
+    float2 dims = float2(width, height);
+    Result[id.xy] = (Source.SampleLevel(linearclampsampler, (float2(id.xy) + float2(-skip, -skip))/dims, 0)
+        + Source.SampleLevel(linearclampsampler, (float2(id.xy) + float2(-skip, skip)) / dims, 0)
+        + Source.SampleLevel(linearclampsampler, (float2(id.xy) + float2(skip, skip)) / dims, 0)
+        + Source.SampleLevel(linearclampsampler, (float2(id.xy) + float2(skip, -skip)) / dims, 0)) /4.0f ;
+
+}
+
+[numthreads(8, 8, 1)]
+void Add(uint3 id : SV_DispatchThreadID)
+{
+    //Result[id.xy] = float4(0, 1, 1, 1);
+    float2 dims = float2(width, height);
+    Final[id.xy] = Source.SampleLevel(linearclampsampler, float2(id.xy) / dims, 0) * intensity + CameraTex.SampleLevel(linearclampsampler, float2(id.xy) / dims, 0);
+
+}
+
+
+//kawase : 0,1,2,2,3 at displacements 1.5,2.5,2.5,3.5
+//want 2 kernels : one to copy in and downres, one to 
+//https://developer.download.nvidia.com/cg/step.html
