@@ -17,7 +17,7 @@ MonoBehaviour:
     Event: 300
     computeShader: {fileID: 7200000, guid: c6461ddaff245764388df9d2a3a68d7e, type: 3}
     threshold: 1
-    intensity: 0.63
+    intensity: 0.1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
