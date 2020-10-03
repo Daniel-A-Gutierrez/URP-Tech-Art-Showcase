@@ -13,7 +13,7 @@ public class SmoothRotate : MonoBehaviour
     public Transform track;
     Rigidbody body;
     Quaternion initial;
-    float slowThreshold=10.0f;
+    public float slowThreshold=10.0f;
     public float maxAnglePerSecond;
     // Start is called before the first frame update
     void Start()
@@ -26,7 +26,7 @@ public class SmoothRotate : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        ConstrainedRotate(Vector3.up);
+        UnconstrainedRotate(track.position);
 
     }
 
