@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ac5ab97a28d92ba48a1c2952bfe82162, type: 3}
   m_Name: NewBlooom
   m_EditorClassIdentifier: 
-  m_Active: 1
+  m_Active: 0
   settings:
-    Event: 300
+    Event: 500
     computeShader: {fileID: 7200000, guid: c6461ddaff245764388df9d2a3a68d7e, type: 3}
     threshold: 1
-    intensity: 0.1
+    intensity: 0.73
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
